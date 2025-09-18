@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CutCurator - Freezer Inventory</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#800020">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CutCurator">
+</head>
+<body>
+    <header>
+        <h1>CutCurator</h1>
+        <p>Your Freezer Inventory Manager</p>
+    </header>
+    
+    <main>
+        <section class="inventory-section">
+            <h2 class="centered desktop-title">Current Inventory</h2>
+            
+            <div class="mobile-header">
+                <div class="header-top">
+                    <h2>Current Inventory</h2>
+                </div>
+                
+                <div class="header-controls">
+                    <div class="sort-controls-mobile">
+                        <select id="sort-select">
+                            <option value="name">Sort: Name</option>
+                            <option value="date-oldest">Sort: Oldest First</option>
+                            <option value="date-newest">Sort: Newest First</option>
+                            <option value="category">Sort: Category</option>
+                            <option value="quantity">Sort: Quantity</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <section class="actions-section">
+                <button id="cooking-mood-btn-desktop" class="action-btn">What Should I Cook?</button>
+                <button id="add-new-cut-btn-desktop" class="action-btn">Add New Cut</button>
+            </section>
+            
+            <div id="inventory-container">
+                <!-- Inventory items will be dynamically added here -->
+            </div>
+            
+            <div class="inventory-summary">
+                <span id="summary-text">0 items • 0kg total</span>
+            </div>
+        </section>
+        
+        <!-- Mobile Bottom Navigation -->
+        <div class="mobile-bottom-nav">
+            <button id="cooking-mood-btn" class="bottom-nav-btn">
+                <span class="btn-icon">👨‍🍳</span>
+                <span class="btn-label">Cook</span>
+            </button>
+            <button id="add-new-cut-btn" class="bottom-nav-btn primary">
+                <span class="btn-icon">➕</span>
+                <span class="btn-label">Add Cut</span>
+            </button>
+            <button id="share-btn-mobile" class="bottom-nav-btn">
+                <span class="btn-icon">📤</span>
+                <span class="btn-label">Share</span>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="mobile-menu hidden">
+            <div class="mobile-menu-content">
+                <div class="mobile-menu-header">
+                    <h3>Menu</h3>
+                    <button id="close-mobile-menu" class="close-btn">✕</button>
+                </div>
+                <div class="mobile-menu-items">
+                    <button id="share-inventory-btn" class="mobile-menu-item">
+                        <span class="menu-icon">📤</span>
+                        Share Inventory
+                    </button>
+                    <button id="import-inventory-btn" class="mobile-menu-item">
+                        <span class="menu-icon">📥</span>
+                        Import from Family
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="cooking-mood-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>What's Your Cooking Mood?</h3>
+                <div class="mood-buttons">
+                    <button class="mood-btn" data-mood="quick">Quick & Easy</button>
+                    <button class="mood-btn" data-mood="slow">Slow & Cozy</button>
+                    <button class="mood-btn" data-mood="grill">Grill</button>
+                    <button class="mood-btn" data-mood="special">Special Occasion</button>
+                </div>
+                <div id="mood-results" class="hidden">
+                    <h4>Perfect for your mood:</h4>
+                    <div id="recommended-cuts"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="recipe-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3 id="recipe-title">Recipe Ideas</h3>
+                <div id="recipe-list"></div>
+            </div>
+        </div>
+        
+        <div id="add-cut-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Add New Cut</h3>
+                <form id="add-cut-form">
+                    <div class="form-group">
+                        <label for="cut-name">Cut Name:</label>
+                        <input type="text" id="cut-name" required placeholder="e.g. Ribeye Steak">
+                    </div>
+                    <div class="form-group">
+                        <label for="cut-weight">Weight:</label>
+                        <input type="text" id="cut-weight" required placeholder="e.g. 800g">
+                    </div>
+                    <div class="form-group">
+                        <label for="cut-quantity">Quantity:</label>
+                        <input type="number" id="cut-quantity" min="1" required value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="cut-category">Category:</label>
+                        <select id="cut-category" required>
+                            <option value="">Select category...</option>
+                            <option value="quick">Quick & Easy</option>
+                            <option value="slow">Slow & Cozy</option>
+                            <option value="grill">Grill</option>
+                            <option value="special">Special Occasion</option>
+                            <option value="ground">Ground Meat</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-add">Add Cut</button>
+                        <button type="button" class="btn btn-cancel" onclick="closeAddCutModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="add-recipe-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3 id="add-recipe-title">Add Custom Recipe</h3>
+                <form id="add-recipe-form">
+                    <div class="form-group">
+                        <label for="recipe-name">Recipe Name:</label>
+                        <input type="text" id="recipe-name" required placeholder="e.g. Perfect Grilled Steak">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipe-url">Recipe URL:</label>
+                        <input type="url" id="recipe-url" required placeholder="https://example.com/recipe">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-add">Add Recipe</button>
+                        <button type="button" class="btn btn-cancel" onclick="closeAddRecipeModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div id="confirmation-modal" class="modal hidden">
+            <div class="modal-content confirmation-modal">
+                <h3 id="confirmation-title">Confirm Action</h3>
+                <p id="confirmation-message">Are you sure you want to proceed?</p>
+                <div class="form-actions">
+                    <button id="confirm-yes" class="btn btn-danger">Yes</button>
+                    <button id="confirm-no" class="btn btn-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="notes-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3 id="notes-title">Add Notes</h3>
+                <div class="form-group">
+                    <label for="notes-textarea">Cooking Notes:</label>
+                    <textarea id="notes-textarea" rows="4" placeholder="Add your cooking tips, timing, temperature, etc..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button id="save-notes" class="btn btn-add">Save Notes</button>
+                    <button type="button" class="btn btn-cancel" onclick="closeNotesModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="import-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Import Family Inventory</h3>
+                <p>Paste the shared inventory data from a family member:</p>
+                <div class="form-group">
+                    <label for="import-data">Inventory Data:</label>
+                    <textarea id="import-data" rows="6" placeholder="Paste the shared data here..."></textarea>
+                </div>
+                <div class="import-options">
+                    <label>
+                        <input type="radio" name="import-mode" value="replace" checked>
+                        Replace current inventory
+                    </label>
+                    <label>
+                        <input type="radio" name="import-mode" value="merge">
+                        Merge with current inventory
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button id="import-inventory" class="btn btn-add">Import</button>
+                    <button type="button" class="btn btn-cancel" onclick="closeImportModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="notification" class="notification hidden">
+            <span id="notification-message">Success!</span>
+        </div>
+    </main>
+    
+    <script src="script.js"></script>
+</body>
+</html>
