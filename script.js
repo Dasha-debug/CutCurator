@@ -554,20 +554,29 @@ function setupEventListeners() {
     };
     
     // Mobile menu button
-    document.getElementById('mobile-menu-btn').onclick = function() {
-        showMobileMenu();
-    };
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.onclick = function() {
+            showMobileMenu();
+        };
+    }
     
     // Close mobile menu button
-    document.getElementById('close-mobile-menu').onclick = function() {
-        closeMobileMenu();
-    };
+    const closeMobileMenuBtn = document.getElementById('close-mobile-menu');
+    if (closeMobileMenuBtn) {
+        closeMobileMenuBtn.onclick = function() {
+            closeMobileMenu();
+        };
+    }
     
     // Share inventory button
-    document.getElementById('share-inventory-btn').onclick = function() {
-        shareInventory();
-        closeMobileMenu();
-    };
+    const shareInventoryBtn = document.getElementById('share-inventory-btn');
+    if (shareInventoryBtn) {
+        shareInventoryBtn.onclick = function() {
+            shareInventory();
+            closeMobileMenu();
+        };
+    }
     
     // Import inventory button
     document.getElementById('import-inventory').onclick = function() {
@@ -581,9 +590,12 @@ function setupEventListeners() {
     };
     
     // Mobile share button
-    document.getElementById('share-btn-mobile').onclick = function() {
-        shareInventory();
-    };
+    const shareBtnMobile = document.getElementById('share-btn-mobile');
+    if (shareBtnMobile) {
+        shareBtnMobile.onclick = function() {
+            shareInventory();
+        };
+    }
     
     // Close mobile menu when clicking outside
     document.getElementById('mobile-menu').onclick = function(e) {
