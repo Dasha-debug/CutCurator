@@ -582,7 +582,7 @@ function setupEventListeners() {
     
     // Mobile share button
     document.getElementById('share-btn-mobile').onclick = function() {
-        showMobileMenu();
+        shareInventory();
     };
     
     // Close mobile menu when clicking outside
@@ -612,24 +612,33 @@ function setupEventListeners() {
         };
     }
     
-    // Mood selection buttons
-    document.querySelectorAll('.mood-btn').forEach(btn => {
-        btn.onclick = function() {
-            const mood = this.dataset.mood;
+    // Mood selection buttons - use event delegation
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('mood-btn')) {
+            const mood = e.target.getAttribute('data-mood');
+            console.log('Mood selected:', mood); // Debug
             showCookingRecommendations(mood);
-        };
+        }
     });
 }
 
 // Show cooking recommendations based on mood
 function showCookingRecommendations(mood) {
+    console.log('showCookingRecommendations called with mood:', mood); // Debug
     const resultsDiv = document.getElementById('mood-results');
     const cutsDiv = document.getElementById('recommended-cuts');
     
+    if (!resultsDiv || !cutsDiv) {
+        console.error('Required elements not found'); // Debug
+        return;
+    }
+    
     const availableCuts = cookingStyles[mood] || [];
+    console.log('Available cuts for', mood, ':', availableCuts); // Debug
     const availableItems = inventory.filter(item => 
         availableCuts.includes(item.type) && (item.quantity - item.used) > 0
     );
+    console.log('Available items:', availableItems); // Debug
     
     if (availableItems.length === 0) {
         cutsDiv.innerHTML = '<p>No cuts available for this cooking style right now.</p>';
